@@ -1,0 +1,39 @@
+# Cortex-Compatible Pipeline — Stage 3 of 3: VERIFIED (no-op)
+# -----------------------------------------------------------------------------
+# Stage order: Integrated → Hardened → Verified (here)
+#
+# Triggered by the `workflow_run` event when "Cortex Hardened" completes, and
+# only proceeds when that run SUCCEEDED. This is the last link in the chain.
+#
+# Once real, this is where the production deploy lives. Lead time is measured
+# from the RC's creation (Integrated) through to here, so the deploy belongs in
+# this stage to make commit-to-production time accurate.
+#
+# Every stage here is a NO-OP — nothing is checked or deployed yet.
+#
+# IMPORTANT: keep the canonical stage identifier `verified`. Cortex maps
+# stages by name.
+# -----------------------------------------------------------------------------
+
+name: Cortex Verified
+
+on:
+  workflow_run:
+    workflows: ["Cortex Hardened"]   # must match the `name:` of stage 2
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  # ===========================================================================
+  # VERIFIED — final checks + deploy to production
+  # Runs only if Hardened succeeded.
+  # ===========================================================================
+  verified:
+    name: 'Verified — Checks & Deploy'
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: No-op
+        run: echo "verified stage — nothing to do yet"
