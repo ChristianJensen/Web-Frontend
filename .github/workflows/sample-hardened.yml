@@ -1,0 +1,42 @@
+# Cortex-Compatible Pipeline — Stage 2 of 3: HARDENED (no-op)
+# -----------------------------------------------------------------------------
+# Stage order: Integrated → Hardened (here) → Verified
+#
+# This file does NOT run on push/PR directly. It is triggered by the
+# `workflow_run` event when "Cortex Integrated" completes, and the job-level
+# `if` guard ensures it only proceeds when that run SUCCEEDED. A failed
+# Integrated stage stops the chain here.
+#
+# Note: `workflow_run` workflows must live on the repository's default branch
+# (e.g. main) to fire — that's a GitHub requirement, not a Cortex one.
+#
+# Every stage here is a NO-OP — nothing is scanned yet.
+#
+# IMPORTANT: keep the canonical stage identifier `hardened`. Cortex maps
+# stages by name.
+# -----------------------------------------------------------------------------
+
+name: Cortex Hardened
+
+on:
+  workflow_run:
+    workflows: ["Cortex Integrated"]   # must match the `name:` of stage 1
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  # ===========================================================================
+  # HARDENED — security & dependency audit of the RC
+  # Runs only if Integrated succeeded. Once real: secrets scan, SAST, deps.
+  # ===========================================================================
+  hardened:
+    name: 'Hardened — Audit'
+    runs-on: ubuntu-latest
+    # Only proceed when the upstream Integrated run succeeded. `workflow_dispatch`
+    # has no upstream conclusion, so allow it through for manual re-runs.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: No-op
+        run: echo "hardened stage — nothing to do yet"
