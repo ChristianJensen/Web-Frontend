@@ -1,0 +1,49 @@
+name: Web App Pet Store
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # ===========================================================================
+  # INTEGRATED — build the release candidate
+  # Runs on every PR and push. (Once real, this is your build + unit-test gate.)
+  # ===========================================================================
+  integrated:
+    name: 'Integrated — Build'
+    runs-on: ubuntu-latest
+    steps:
+      - name: No-op
+        run: echo "integrated stage — nothing to do yet"
+
+  # ===========================================================================
+  # HARDENED — security & dependency audit of the RC
+  # Depends on a green Integrated stage. Push/dispatch only (skipped on PRs)
+  # so PR feedback stays fast; flip the `if` if you want it on PRs too.
+  # ===========================================================================
+  hardened:
+    name: 'Hardened — Audit'
+    runs-on: ubuntu-latest
+    needs: integrated
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: No-op
+        run: echo "hardened stage — nothing to do yet"
+
+  # ===========================================================================
+  # VERIFIED — final checks + deploy to production
+  # Depends on both prior stages. Push/dispatch only — you don't deploy from a
+  # PR. Lead time is measured from the RC's creation to here, so this stage is
+  # where the deploy lives once it's real.
+  # ===========================================================================
+  verified:
+    name: 'Verified — Checks & Deploy'
+    runs-on: ubuntu-latest
+    needs: [integrated, hardened]
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: No-op
+        run: echo "verified stage — nothing to do yet"
