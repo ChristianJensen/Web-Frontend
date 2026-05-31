@@ -42,5 +42,5 @@ jobs:
     name: 'Integrated — Build'
     runs-on: ubuntu-latest
     steps:
-      - name: No-op
-        run: echo "integrated stage — nothing to do yet"
+      - name: Sleep for 3 minutes
+        run: sleep 180
