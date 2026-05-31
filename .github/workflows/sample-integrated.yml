@@ -1,0 +1,46 @@
+# Cortex-Compatible Pipeline — Stage 1 of 3: INTEGRATED (no-op)
+# -----------------------------------------------------------------------------
+# This is the multi-file variant of the skeleton: one workflow file per stage,
+# chained in order. This file is the ENTRY POINT — it runs on push/PR/dispatch.
+#
+# Stage order: Integrated (here) → Hardened → Verified
+#
+# How the chain works:
+#   - This workflow runs on push / PR / manual dispatch.
+#   - When it finishes, `cortex-hardened.yml` wakes up via a `workflow_run`
+#     trigger and runs only if this workflow succeeded.
+#   - `cortex-verified.yml` chains off Hardened the same way.
+#
+# Why chain with `workflow_run` instead of `needs:`?
+#   `needs:` only orders jobs WITHIN one workflow file. Across separate files
+#   you order with `workflow_run`, where each stage listens for the previous
+#   workflow to complete. Trade-off: each stage is its own run, so they don't
+#   share artifacts or a checkout automatically — you re-checkout / re-download
+#   in each file once these stages do real work.
+#
+# Every stage here is a NO-OP — nothing is built, tested, scanned, or deployed.
+#
+# IMPORTANT: keep the canonical stage identifier `integrated` (job key + the
+# stage value you send to Cortex). Cortex maps stages by those names.
+# -----------------------------------------------------------------------------
+
+name: Cortex Integrated
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # ===========================================================================
+  # INTEGRATED — build the release candidate
+  # Once real: build once, run unit tests, lint, typecheck → produce the RC.
+  # ===========================================================================
+  integrated:
+    name: 'Integrated — Build'
+    runs-on: ubuntu-latest
+    steps:
+      - name: No-op
+        run: echo "integrated stage — nothing to do yet"
